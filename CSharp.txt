@@ -1,0 +1,331 @@
+## Difference Property and fields
+
+Answer:
+
+public class Person
+{
+    public string Name { get; set; }  // This is a property
+}
+
+public class Person
+{
+    public string Name;  // This is a field
+}
+
+Properties provide a way to encapsulate data and add additional logic for accessing that data, while fields are simpler
+and offer direct access without any additional logic. The choice between using a property and a field depends on the 
+needs for encapsulation, validation, and data-binding in your application.
+
+
+## Can you explain what delegates are in C# and provide an example of their use?
+
+Answer:
+
+In C#, a delegate is a type that represents references to methods with a specific parameter list and return type. 
+Delegates are similar to function pointers in C/C++, but they are type-safe and secure. They are primarily used for 
+passing methods as arguments to other methods, implementing callback methods, and event handling.
+
+Key Features of Delegates:
+Type Safety: Delegates ensure that the method signature matches the expected parameters and return type.
+Multicast: Delegates can hold references to multiple methods, which allows invoking multiple methods in a single call.
+Flexibility: They allow methods to be passed as parameters, facilitating the design of flexible and reusable code.
+
+public delegate void Notify(string message);
+
+public class Notifier
+{
+    public void EmailNotifier(string message)
+    {
+        Console.WriteLine("Email Notification: " + message);
+    }
+
+    public void SMSNotifier(string message)
+    {
+        Console.WriteLine("SMS Notification: " + message);
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Notifier notifier = new Notifier();
+
+        // Create delegate instances
+        Notify notifyEmail = new Notify(notifier.EmailNotifier);
+        Notify notifySMS = new Notify(notifier.SMSNotifier);
+
+        // Use the delegate instances to call the methods
+        notifyEmail("This is an email notification.");
+        notifySMS("This is an SMS notification.");
+
+        // Multicast delegate example
+        Notify multiNotify = notifyEmail + notifySMS;
+        multiNotify("This is a multicast notification.");
+    }
+}
+
+
+##Can you explain access modifiers in C# and their default values for classes, fields, and other members?
+
+Answer:
+
+Access modifiers in C# determine the visibility and accessibility of classes, methods, and other members. The main access modifiers are:
+
+public: Accessible from any other code.
+private: Accessible only within the containing class or struct.
+protected: Accessible within the containing class or struct, and by derived classes.
+internal: Accessible only within the same assembly.
+protected internal: Accessible within the current assembly and from derived classes in other assemblies.
+private protected: Accessible within its containing class or struct and derived classes in the same assembly.
+The default access modifiers are:
+
+Classes: internal
+Fields, properties, methods, and events within a class: private
+Structs: internal
+Interfaces: internal
+Enum members: public
+Members of an interface: public by default and cannot have an explicit access modifier.
+
+class MyClass // internal by default
+{
+    int myField; // private by default
+    void MyMethod() { } // private by default
+}
+
+interface IMyInterface // internal by default
+{
+    void MyMethod(); // public by default
+}
+
+Namespaces
+A namespace is a logical grouping of related types, such as classes, interfaces, enums, and structs. 
+Namespaces provide a way to organize code and avoid naming conflicts by creating a hierarchical structure.
+
+
+## What are static classes and when are they used?
+
+Answer:
+
+A static class in C# is a class that cannot be instantiated or inherited and can only contain static members. 
+Static members belong to the class itself rather than to any specific object of the class. Static classes are 
+typically used to create utility or helper classes that provide a set of methods or properties relevant to a particular 
+functionality without the need to create an instance of the class.
+
+Key Characteristics of Static Classes:
+Cannot be Instantiated: You cannot create an instance of a static class using the new keyword.
+Contain Only Static Members: All members (methods, properties, fields, events, and constructors) of a static class must be static.
+Cannot Be Inherited: Static classes cannot be used as a base class, nor can they inherit from any other class except Object.
+Implicitly Sealed: Static classes are implicitly sealed, meaning they cannot be inherited.
+
+When to Use Static Classes:
+Utility or Helper Methods: When you have a collection of methods that perform operations and do not maintain any state.
+Configuration or Constants: To hold constant values or configuration settings that do not change.
+Extension Methods: Static classes are often used to define extension methods.
+Singleton Pattern: When implementing the Singleton pattern, although not necessary, static classes can be an alternative 
+if the class does not need to be instantiated.
+
+public static class MathUtilities
+{
+    public static int Square(int number)
+    {
+        return number * number;
+    }
+
+    public static int Cube(int number)
+    {
+        return number * number * number;
+    }
+}
+
+// Usage
+class Program
+{
+    static void Main(string[] args)
+    {
+        int resultSquare = MathUtilities.Square(5);
+        int resultCube = MathUtilities.Cube(3);
+
+        Console.WriteLine($"Square of 5 is: {resultSquare}");
+        Console.WriteLine($"Cube of 3 is: {resultCube}");
+    }
+}
+
+
+## Extension Methods in C#
+
+Answer:
+
+Extension methods in C# allow us to add new methods to existing types without modifying their source code or creating
+derived types. This is particularly useful for adding functionality to types that are sealed or cannot be modified, 
+such as those in the .NET framework or third-party libraries.
+
+An extension method is a static method defined in a static class, where the first parameter specifies the type it extends 
+and is preceded by the this keyword.
+
+public static class StringExtensions
+{
+    public static string ToTitleCase(this string str)
+    {
+        if (string.IsNullOrEmpty(str))
+            return str;
+
+        var words = str.Split(' ');
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (words[i].Length > 0)
+            {
+                words[i] = words[i][0].ToString().ToUpper() + words[i].Substring(1).ToLower();
+            }
+        }
+        return string.Join(' ', words);
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string title = "hello world";
+        string titleCased = title.ToTitleCase();
+
+        Console.WriteLine(titleCased); // Output: Hello World
+    }
+}
+
+
+## Types of Constructors in C#
+
+Answer:
+
+Constructors in C# are special methods that are called when an object is instantiated. 
+They are used to initialize objects and set up initial states or values. C# supports several types of constructors:
+
+Default Constructor
+Parameterized Constructor
+
+Copy Constructor - A copy constructor is a constructor that initializes an object using another object of the same class.
+It is used to create a copy of an existing object.
+public Person(Person person)
+    {
+        Name = person.Name;
+    }
+
+Static Constructor - A static constructor is used to initialize static members of the class. 
+It is called only once, when the class is first loaded. It cannot take parameters or have an access modifier.
+
+Private Constructor - A private constructor is used to prevent the creation of instances from outside the class. 
+It is often used in singleton patterns to control instance creation.
+
+
+## Difference readonly and const 
+
+Answer:
+
+Initialization Time: const must be initialized at compile time, while readonly can be initialized at runtime.
+Mutability: const values are immutable and cannot be changed, while readonly values can be set once and cannot be 
+changed thereafter.
+Static vs. Instance: const is implicitly static, while readonly can be either instance-level or static.
+Compile-time Evaluation: const values are evaluated at compile time, whereas readonly values are evaluated at runtime.
+
+public class Constants
+{
+    public const int MaxValue = 100; // Compile-time constant
+    public readonly int DefaultValue; // Readonly field, can be initialized at runtime or in constructor
+
+    public Constants(int value)
+    {
+        DefaultValue = value; // Initialized in constructor
+    }
+}
+
+Use const for values that are known at compile time and are not expected to change.
+Use readonly for values that need to be set at runtime or based on other factors and are not expected to change thereafter.
+
+
+## Difference ref vs out
+
+Answer:
+
+Initialization: ref parameters require initialization before being passed, while out parameters do not.
+Two-way Communication: ref parameters allow two-way communication, while out parameters are used for output only.
+Assignment Requirement: Methods with out parameters must assign a value to the parameter before returning,
+while it's optional for ref parameters.
+Usage Scenarios: Use ref when you need to pass a variable by reference and may or may not modify its value;
+use out when the method needs to return a value and multiple return values are required.
+
+public void Increment(ref int x)
+{
+    x++;
+}
+
+// Usage
+int number = 5;
+Increment(ref number);
+Console.WriteLine(number); // Output: 6
+
+public void Divide(int dividend, int divisor, out int quotient, out int remainder)
+{
+    quotient = dividend / divisor;
+    remainder = dividend % divisor;
+}
+
+// Usage
+int result, remainder;
+Divide(10, 3, out result, out remainder);
+Console.WriteLine($"Quotient: {result}, Remainder: {remainder}"); // Output: Quotient: 3, Remainder: 1
+
+Use ref parameters when two-way communication is needed and the variable must be initialized before being passed.
+Use out parameters when returning multiple values from a method or when the initial value of the variable is not 
+important to the caller.
+
+
+##What is serialization?
+
+Answer:
+
+In order to transport an object through a network, we would need to convert it into a stream of bytes. 
+This process is called Serialization. 
+
+
+## What is meant by Unmanaged or Managed Code?
+
+Answer:
+
+Managed Code: Code that runs in a managed execution environment like the CLR, providing automatic memory management, 
+enhanced security, and platform independence. Examples include C#, VB.NET.
+
+Unmanaged Code: Code that runs directly on the native machine without a runtime environment,
+requiring manual memory management and offering direct access to system resources. Examples include C, C++, assembly.
+
+
+## Difference Abstract class and interface?
+
+Answer:
+
+Implementation:
+Abstract classes can contain both abstract and non-abstract methods with implementations,
+while interfaces cannot contain any implementation.
+Inheritance:
+A class can inherit from only one abstract class but can implement multiple interfaces.
+Members:
+Abstract classes can have fields, constructors, methods (abstract and non-abstract), properties, indexers, events, 
+while interfaces can only have method signatures, properties, events, and indexers.
+Access Modifiers:
+Abstract class members can have access modifiers, while interface members are always public and cannot have access modifiers.
+Purpose:
+Abstract classes are used to define a common base for related classes, providing a partial implementation that derived
+ classes can override and extend.
+Interfaces are used to define a contract for classes, ensuring that they provide certain functionality without dictatin
+ how that functionality is implemented.
+
+Summary:
+
+Abstract Class: Provides a partial implementation, can have fields, constructors, methods (abstract and non-abstract), 
+properties, indexers, events, and can be inherited by one class.
+Interface: Defines a contract for classes, contains only method signatures, properties, events, and indexers 
+(no implementation), and can be implemented by multiple classes.
+
+
+
+
